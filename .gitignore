@@ -2,6 +2,7 @@ node_modules
 dist/*
 src/*
 SCSS/*
+*.html
 .tmp
 .sass-cache
 bower_components
