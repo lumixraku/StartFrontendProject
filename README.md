@@ -31,4 +31,38 @@
 - package.json -- node配置文件
 - .bowerrc -- 更改bower默认安装路径的环境文件
 - .changelog -- 项目文件修改的日志记录
+
 ------------
+
+
+# English
+The most basic configuration, not modular loading (webpack, cmd, adm ==),
+Free to expand on this basis
+
+##surroundings
+- Node v4.x
+- Gulp v3.x
+- Bower v2.x (You can also `npm install bower -g`)
+- Node-sass
+- Python 2.7.x
+  - (Browser-sync dependence, when executed `npm install browser-sync`, at Windows)
+
+
+## Features
+- Compile SASS / SCSS -> CSS
+- Compression JS / HTML / CSS / Pictures
+- Merge Files
+- JS Syntax Check
+- Add suffixes
+- Real-time preview update your browser
+- Clear File
+
+
+## Directory structures and file
+- Dist - publishing directory
+- Src - source code directory
+- .gitignore - Github submit ignored
+- Gulpfile.js - gulp profile
+- Package.json - node configuration file
+- .bowerrc - Change the default installation path bower environmental documents
+- .changelog - Project file modification logging
