@@ -1,0 +1,7 @@
+node_modules
+dist/*
+src/*
+SCSS/*
+.tmp
+.sass-cache
+bower_components
