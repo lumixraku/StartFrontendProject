@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # GulpfileDemo
 
 #中文
