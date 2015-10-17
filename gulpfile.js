@@ -1,9 +1,8 @@
-'use strict'
 // -------------------------------------
 //   Modules
 // -------------------------------------
 //
-// gulp              : The streaming build system
+// gulp              : The streaming dist system
 // gulp-autoprefixer : Prefix CSS
 // gulp-sourcemaps   :Source map support for Gulp.js
 // gulp-babel        : Turn ES6 code into vanilla ES5 with no runtime required
@@ -38,41 +37,50 @@ var gulp = require('gulp'),
     plugins = gulpLoadPlugins({
         /*gulp-load-plugins options*/
         rename: {
-            'gulp-sass': 'sass',
-            'gulp-if': 'if',
-            'gulp-filter': 'filter',
-            'gulp-eslint': 'eslint',
-            'gulp-babel': 'babel',
             'gulp-debug': 'debugger',
             'gulp-minify-html': 'gmh',
             'gulp-minify-css': 'gmc',
-            'gulp-plumber': 'plumber',
             'gulp-rimraf': 'gr',
-            'gulp-size': 'size',
             'gulp-sourcemaps': 'smap',
-            'gulp-util': 'util',
-            'gulp-watch': 'watch',
-            'gul-concat': 'concat'
         } //a mapping of plugins to rename
-    }),
-    port = 35729;
+    });
 
 
-// 编译Sass及监听scss
+//目录路径
+var sourceDir = './webstart/build/',
+    imgSourceDir = sourceDir + 'img/',
+    jsSourceDir = sourceDir + 'js/',
+    cssSourceDir = sourceDir + 'css/',
+    lessSourceDir = sourceDir + 'less/',
+    scssSourceDir = sourceDir + 'scss/';
+var distDir = './webstart/dist/',
+    imgDistDir = distDir + 'img/',
+    jsDistDir = distDir + 'js/',
+    cssDistDir = distDir + 'css/';
+
+
 // scss编译后的css将注入到浏览器里实现更新
 gulp.task('sass', function () {
-    return gulp.src('./scss/*.scss')
+    return gulp.src(scssSourceDir + '**/*.scss')
+        .pipe(plugins.plumber({
+            errorHandler: plugins.notify.onError(
+                'Error: <%= error.message %>')
+        }))
         .pipe(plugins.sass({
             style: 'expanded'
         }))
-        .pipe(gulp.dest('./src/css'))
+        .pipe(plugins.autoprefixer({
+            browsers: ['last 2 versions'],
+            cascade: false
+        }))
+        .pipe(gulp.dest(cssSourceDir))
         .pipe(plugins.gmc({
             compatibility: 'ie8'
         }))
         .pipe(plugins.rename({
             suffix: ".min"
         }))
-        .pipe(gulp.dest('./dist/css/'))
+        .pipe(gulp.dest(cssDistDir))
         .pipe(reload({
             stream: true
         }));
@@ -83,10 +91,10 @@ gulp.task('sass', function () {
 gulp.task('serve', ['sass'], function () {
 
     browserSync.init({
-        server: "./"
+        server: "distDir"
     });
 
-    gulp.watch("./scss/*.scss", ['sass']);
+    gulp.watch(scssSourceDir + "*.scss", ['sass']);
     gulp.watch("./*.html")
         .on('change', reload);
 });
@@ -95,21 +103,28 @@ gulp.task('serve', ['sass'], function () {
 
 //压缩css
 gulp.task('minifyCSS', function () {
-    var ic = './src/',
-        oc = './dist/'
-    gulp.src(ic + 'css/*.css')
+    gulp.src(cssSourceDir + '*.css')
+        .pipe(plugins.plumber({
+            errorHandler: plugins.notify.onError(
+                'Error: <%= error.message %>')
+        }))
+        .pipe(plugins.autoprefixer({
+            browsers: ['last 2 versions'],
+            cascade: false
+        }))
+        .pipe(gulp.dest(cssSourceDir))
         .pipe(plugins.gmc({
             compatibility: 'ie8'
         }))
         .pipe(plugins.rename({
             suffix: ".min"
         }))
-        .pipe(gulp.dest(oc + '/css'))
+        .pipe(gulp.dest(cssDistDir))
 })
 
 //压缩HTML
 gulp.task('minifyHTML', function () {
-    return gulp.src('index.html')
+    return gulp.src(sourceDir + '*.html')
         .pipe(plugins.gmh({
             conditionals: true,
             spare: true
@@ -117,29 +132,24 @@ gulp.task('minifyHTML', function () {
         .pipe(plugins.rename({
             suffix: ".min"
         }))
-        .pipe(gulp.dest('./'))
+        .pipe(gulp.dest(distDir))
 })
 
 //压缩图片
 gulp.task('minifyImg', function () {
-    return gulp.src('./src/images/*')
-        .pipe(plugins.imagemin({
-            progressive: true,
-            svgoPlugins: [{
-                removeViewBox: false
-            }]
-        }))
-        .pipe(gulp.dest('./dist/images'));
+    return gulp.src(imgSourceDir + '*')
+        .pipe(plugins.imagemin())
+        .pipe(gulp.dest(imgDistDir));
 })
 
 // 合并，压缩文件
 gulp.task('minifyJS', function () {
-    return gulp.src('./src/js/**/*.js')
+    return gulp.src(jsSourceDir + '**/*.js')
         .pipe(plugins.concat('all.js'))
-        .pipe(gulp.dest('./src/all'))
+        .pipe(gulp.dest(jsSourceDir))
         .pipe(plugins.uglify())
         .pipe(plugins.rename('all.min.js'))
-        .pipe(gulp.dest('./dist/js'))
+        .pipe(gulp.dest(jsDistDir))
 })
 
 // 默认任务
