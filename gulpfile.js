@@ -34,7 +34,7 @@ var gulp = require('gulp'),
     browserSync = require('browser-sync')
     .create(),
     reload = browserSync.reload,
-    plugins = gulpLoadPlugins({
+    pin = gulpLoadPlugins({ //plugins rename pin
         /*gulp-load-plugins options*/
         rename: {
             'gulp-debug': 'debugger',
@@ -62,22 +62,22 @@ var distDir = './webstart/dist/',
 // scss编译后的css将注入到浏览器里实现更新
 gulp.task('sass', function () {
     return gulp.src(scssSourceDir + '**/*.scss')
-        .pipe(plugins.plumber({
-            errorHandler: plugins.notify.onError(
+        .pipe(pin.plumber({
+            errorHandler: pin.notify.onError(
                 'Error: <%= error.message %>')
         }))
-        .pipe(plugins.sass({
+        .pipe(pin.sass({
             style: 'expanded'
         }))
-        .pipe(plugins.autoprefixer({
+        .pipe(pin.autoprefixer({
             browsers: ['last 2 versions'],
             cascade: false
         }))
         .pipe(gulp.dest(cssSourceDir))
-        .pipe(plugins.gmc({
+        .pipe(pin.gmc({
             compatibility: 'ie8'
         }))
-        .pipe(plugins.rename({
+        .pipe(pin.rename({
             suffix: ".min"
         }))
         .pipe(gulp.dest(cssDistDir))
@@ -104,19 +104,19 @@ gulp.task('serve', ['sass'], function () {
 //压缩css
 gulp.task('minifyCSS', function () {
     gulp.src(cssSourceDir + '*.css')
-        .pipe(plugins.plumber({
-            errorHandler: plugins.notify.onError(
+        .pipe(pin.plumber({
+            errorHandler: pin.notify.onError(
                 'Error: <%= error.message %>')
         }))
-        .pipe(plugins.autoprefixer({
+        .pipe(pin.autoprefixer({
             browsers: ['last 2 versions'],
             cascade: false
         }))
         .pipe(gulp.dest(cssSourceDir))
-        .pipe(plugins.gmc({
+        .pipe(pin.gmc({
             compatibility: 'ie8'
         }))
-        .pipe(plugins.rename({
+        .pipe(pin.rename({
             suffix: ".min"
         }))
         .pipe(gulp.dest(cssDistDir))
@@ -125,11 +125,11 @@ gulp.task('minifyCSS', function () {
 //压缩HTML
 gulp.task('minifyHTML', function () {
     return gulp.src(sourceDir + '*.html')
-        .pipe(plugins.gmh({
+        .pipe(pin.gmh({
             conditionals: true,
             spare: true
         }))
-        .pipe(plugins.rename({
+        .pipe(pin.rename({
             suffix: ".min"
         }))
         .pipe(gulp.dest(distDir))
@@ -138,17 +138,17 @@ gulp.task('minifyHTML', function () {
 //压缩图片
 gulp.task('minifyImg', function () {
     return gulp.src(imgSourceDir + '*')
-        .pipe(plugins.imagemin())
+        .pipe(pin.imagemin())
         .pipe(gulp.dest(imgDistDir));
 })
 
 // 合并，压缩文件
 gulp.task('minifyJS', function () {
     return gulp.src(jsSourceDir + '**/*.js')
-        .pipe(plugins.concat('all.js'))
+        .pipe(pin.concat('all.js'))
         .pipe(gulp.dest(jsSourceDir))
-        .pipe(plugins.uglify())
-        .pipe(plugins.rename('all.min.js'))
+        .pipe(pin.uglify())
+        .pipe(pin.rename('all.min.js'))
         .pipe(gulp.dest(jsDistDir))
 })
 
