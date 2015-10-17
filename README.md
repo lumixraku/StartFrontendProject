@@ -1,7 +1,7 @@
 # GulpfileDemo
 
 #中文
-最基础的配置,没有模块化加载的实现(webpack,cmd,adm == ),
+最基础的配置,没有模块化加载的实现(webpack,requirejs == ),
 可以在这个基础上自行拓展
 
 ##环境

@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 // -------------------------------------
 //   Modules
 // -------------------------------------
@@ -32,6 +32,9 @@
 //import module
 var gulp = require('gulp'),
     gulpLoadPlugins = require('gulp-load-plugins'),
+    browserSync = require('browser-sync')
+    .create(),
+    reload = browserSync.reload,
     plugins = gulpLoadPlugins({
         /*gulp-load-plugins options*/
         rename: {
@@ -58,8 +61,9 @@ var gulp = require('gulp'),
 
 
 // 编译Sass及监听scss
-gulp.task('ss', function () {
-    gulp.src('./scss/*.scss')
+// scss编译后的css将注入到浏览器里实现更新
+gulp.task('sass', function () {
+    return gulp.src('./scss/*.scss')
         .pipe(plugins.sass({
             style: 'expanded'
         }))
@@ -70,12 +74,26 @@ gulp.task('ss', function () {
         .pipe(plugins.rename({
             suffix: ".min"
         }))
-        .pipe(gulp.dest('./dist/css'));
+        .pipe(gulp.dest('./dist/css'))
+        .pipe(reload({
+            stream: true
+        }));
+
+})
+
+// 静态服务器 + 监听 scss/html 文件
+gulp.task('serve', ['sass'], function () {
+
+    browserSync.init({
+        server: "./"
+    });
+
+    gulp.watch("./scss/*.scss", ['sass']);
+    gulp.watch("./*.html")
+        .on('change', reload);
 });
 
-gulp.task('sass:watch', function () {
-    gulp.watch('./sass/**/*.scss', ['ss']);
-});
+
 
 //压缩css
 gulp.task('minifyCSS', function () {
@@ -112,10 +130,15 @@ gulp.task('js', function () {
         .pipe(gulp.dest('./dist'))
         .pipe(plugins.rename('all.min.js'))
         .pipe(plugins.jsmin())
-        .pipe(gulp.dest('./dist/js'));
-});
+        .pipe(gulp.dest('./dist/js'))
+})
 
 // 默认任务
-gulp.task('default', function () {
-    gulp.start('ss', 'js', 'minifyCSS', 'minifyHTML');
-});
+gulp.task('default', ['serve'], function () {
+    gulp.start('sass', 'js', 'minifyCSS', 'minifyHTML')
+})
+
+//监听任务
+gulp.task('watch', function () {
+    gulp.watch('./scss/**/*.scss', ['sass'])
+})
