@@ -10,7 +10,7 @@
 - bower v2.x (也可以通过`npm install bower -g`)
 - node-sass
 - python 2.7.x
- - (browser-sync dependence ,when executed `npm install browser-sync` , at Windows)
+ - (browser-sync 在window下依赖Python 2.x)
 
 
 ##特征

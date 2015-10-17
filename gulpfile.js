@@ -28,7 +28,7 @@
 // gulp-ruby-sass    : Compile Sass to CSS with Ruby Sass
 // -------------------------------------
 
-//import module
+//导入插件模块(import module)
 var gulp = require('gulp'),
     gulpLoadPlugins = require('gulp-load-plugins'),
     browserSync = require('browser-sync')
@@ -40,13 +40,13 @@ var gulp = require('gulp'),
             'gulp-debug': 'debugger',
             'gulp-minify-html': 'gmh',
             'gulp-minify-css': 'gmc',
-            'gulp-rimraf': 'gr',
+            'gulp-rimraf': 'clean',
             'gulp-sourcemaps': 'smap',
         } //a mapping of plugins to rename
     });
 
 
-//目录路径
+//目录路径(Directory Path)
 var sourceDir = './webstart/build/',
     imgSourceDir = sourceDir + 'img/',
     jsSourceDir = sourceDir + 'js/',
@@ -59,7 +59,7 @@ var distDir = './webstart/dist/',
     cssDistDir = distDir + 'css/';
 
 
-// scss编译后的css将注入到浏览器里实现更新
+// scss编译后的css将注入到浏览器里实现更新(scss compile and reload)
 gulp.task('sass', function () {
     return gulp.src(scssSourceDir + '**/*.scss')
         .pipe(pin.plumber({
@@ -87,12 +87,12 @@ gulp.task('sass', function () {
 
 })
 
-// 静态服务器 + 监听 scss/html 文件
+// 静态服务器 + 监听 scss/html 文件(static server + listen scss file on change)
 gulp.task('serve', ['sass'], function () {
 
     browserSync.init({
         server: "distDir"
-    });
+    }); //静态服务器启动的目录(server start directory)
 
     gulp.watch(scssSourceDir + "*.scss", ['sass']);
     gulp.watch("./*.html")
@@ -101,7 +101,7 @@ gulp.task('serve', ['sass'], function () {
 
 
 
-//压缩css
+//压缩css(minify css)
 gulp.task('minifyCSS', function () {
     gulp.src(cssSourceDir + '*.css')
         .pipe(pin.plumber({
@@ -122,9 +122,9 @@ gulp.task('minifyCSS', function () {
         .pipe(gulp.dest(cssDistDir))
 })
 
-//压缩HTML
+//压缩HTML(minify html)
 gulp.task('minifyHTML', function () {
-    return gulp.src(sourceDir + '*.html')
+    return gulp.src(distDir + '*.html')
         .pipe(pin.gmh({
             conditionals: true,
             spare: true
@@ -135,14 +135,14 @@ gulp.task('minifyHTML', function () {
         .pipe(gulp.dest(distDir))
 })
 
-//压缩图片
+//压缩图片(minify photo)
 gulp.task('minifyImg', function () {
     return gulp.src(imgSourceDir + '*')
         .pipe(pin.imagemin())
         .pipe(gulp.dest(imgDistDir));
 })
 
-// 合并，压缩文件
+// 合并，压缩文件(concat file and minify)
 gulp.task('minifyJS', function () {
     return gulp.src(jsSourceDir + '**/*.js')
         .pipe(pin.concat('all.js'))
@@ -152,7 +152,7 @@ gulp.task('minifyJS', function () {
         .pipe(gulp.dest(jsDistDir))
 })
 
-// 默认任务
+// 默认任务(default task)
 gulp.task('default', ['serve'], function () {
     gulp.start('sass', 'minifyJS', 'minifyCSS', 'minifyHTML',
         'minifyImg')
