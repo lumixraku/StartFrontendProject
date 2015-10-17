@@ -43,7 +43,6 @@ var gulp = require('gulp'),
             'gulp-filter': 'filter',
             'gulp-eslint': 'eslint',
             'gulp-babel': 'babel',
-            'gulp-imagemin': 'imgmin',
             'gulp-debug': 'debugger',
             'gulp-minify-html': 'gmh',
             'gulp-minify-css': 'gmc',
@@ -51,7 +50,6 @@ var gulp = require('gulp'),
             'gulp-rimraf': 'gr',
             'gulp-size': 'size',
             'gulp-sourcemaps': 'smap',
-            'gulp-uglify': 'jsmin',
             'gulp-util': 'util',
             'gulp-watch': 'watch',
             'gul-concat': 'concat'
@@ -74,7 +72,7 @@ gulp.task('sass', function () {
         .pipe(plugins.rename({
             suffix: ".min"
         }))
-        .pipe(gulp.dest('./dist/css'))
+        .pipe(gulp.dest('./dist/css/'))
         .pipe(reload({
             stream: true
         }));
@@ -106,12 +104,12 @@ gulp.task('minifyCSS', function () {
         .pipe(plugins.rename({
             suffix: ".min"
         }))
-        .pipe(gulp.dest(oc))
+        .pipe(gulp.dest(oc + '/css'))
 })
 
 //压缩HTML
 gulp.task('minifyHTML', function () {
-    gulp.src('index.html')
+    return gulp.src('index.html')
         .pipe(plugins.gmh({
             conditionals: true,
             spare: true
@@ -122,23 +120,30 @@ gulp.task('minifyHTML', function () {
         .pipe(gulp.dest('./'))
 })
 
+//压缩图片
+gulp.task('minifyImg', function () {
+    return gulp.src('./src/images/*')
+        .pipe(plugins.imagemin({
+            progressive: true,
+            svgoPlugins: [{
+                removeViewBox: false
+            }]
+        }))
+        .pipe(gulp.dest('./dist/images'));
+})
 
 // 合并，压缩文件
-gulp.task('js', function () {
-    gulp.src('./js/*.js')
+gulp.task('minifyJS', function () {
+    return gulp.src('./src/js/**/*.js')
         .pipe(plugins.concat('all.js'))
-        .pipe(gulp.dest('./dist'))
+        .pipe(gulp.dest('./src/all'))
+        .pipe(plugins.uglify())
         .pipe(plugins.rename('all.min.js'))
-        .pipe(plugins.jsmin())
         .pipe(gulp.dest('./dist/js'))
 })
 
 // 默认任务
 gulp.task('default', ['serve'], function () {
-    gulp.start('sass', 'js', 'minifyCSS', 'minifyHTML')
-})
-
-//监听任务
-gulp.task('watch', function () {
-    gulp.watch('./scss/**/*.scss', ['sass'])
+    gulp.start('sass', 'minifyJS', 'minifyCSS', 'minifyHTML',
+        'minifyImg')
 })
